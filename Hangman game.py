@@ -1,97 +1,55 @@
-# This is a very simple Hangman game designed with python.
+# Step 1
 import random
-import time #import time module
+import hangman_art
+import words
 
+stages = hangman_art.stages
+word_list = words.word_list
+logo = hangman_art.logo
 
-Difficulty_Level = input("Difficulty Level(Easy,Medium,Hard):")
+# TODO-1 - Randomly choose a word from the word_list and assign it to a variable
+# called chosen_word.
+chosen_word = random.choice(word_list)
+print(logo)
 
+# TODO-2 - Create blanks as long as the chosen word and store them in an array
+word_length = len(chosen_word)
+word_array = []
 
-# here we set the secret words
-Secret_word = ["Princess","Pillar","Envelope","Barrier","Calender","Marble","Mineral"]
+for num in range(0, word_length):
+    word_array.append("_")
 
-# This code makes sure that random words are chosen in the course of the game.
-word = random.choice(Secret_word)
+game_over = False
+lives = 6
 
-# Introductory code.
-Length = len(word)
-name = input("What is your name?")
-print("Hello " + name, '!, time to play Hangman')
+while not game_over or lives > 0:
+    # TODO-3 - Ask the user to guess a letter and assign their answer to a variable
+    # called guess. Make guess lowercase.
+    guess = input("Guess a letter: ").lower()
 
-time.sleep(2) # wait for 2 seconds
-print("Please wait while your game loads...")
+    # TODO-4 - Check if the letter the user guessed (guess) is one of the letters in
+    # the chosen_word.
+    #index = 0
+    for position in range(word_length):
+        if chosen_word[position] == guess:
+            if word_array[position] == guess:
+                print(f"You've already guessed '{guess}' :)")
+            else:
+                word_array[position] = guess
 
-time.sleep(5) # wait for 5 seconds
-count = 0
-
-# Displaying the length of the 'secret word'
-display = '*' * Length
-
-# Game begins!
-def hangman(count, display, word):
-    limit = 4  # Determines the number of tries
-    guess = input('Your word is ' + display + ' |Go ahead and guess :)')
-    # Creating the while loop
-    # If the guess is in the secrete word display the position of that letter in the word.
-    if guess in word:
-        index = word.find(guess)
-        word = word[:index]+ "*" + word[index + 1:]
-        display = display[:index] + guess + display[index + 1:]
-        print(display)
-    # If the guesses are  not in the secrete word, display the figures below
+    #Tracking the players life and reducing it if the guess is not in the chosen
+    #word
+    if guess not in chosen_word:
+        print(f"{guess} is not in the word, you lose a life :(")
+        print(stages[lives])
+        lives -= 1
     else:
-        count +=1
-        if count == 1: # first wrong guess
-            print("Wrong guess! "+ str(limit - count) + " guesses remaining")
-            print( "__________\n"
-                   "|         | \n"
-                   "|         | \n"
-                   "|         O \n"
-                   "|           \n"
-                   "|           \n"
-                   "|           \n"
-                   "|\ \n"
-                   "|_\ \n")
-        elif count == 2: # Second wrong guess
-             print("Wrong guess! " + str(limit - count) + " guesses remaining")
-             print("__________\n"
-                   "|         |\n"
-                   "|         |\n"
-                   "|         O\n"
-                   "|        /|\ \n"
-                   "|           \n"
-                   "|           \n"
-                   "|\ \n"
-                   "|_\ \n")
-        elif count == 3: # Third wrong guess
-             print("Wrong guess! " + str(limit - count) + " guesses remaining \n THIS IS YOUR FINAL GUESS!!")
-             print("__________\n"
-                   "|         | \n"
-                   "|         | \n"
-                   "|         O \n"
-                   "|        /|\ \n"
-                   "|         | \n"
-                   "|           \n"
-                   "|\ \n"
-                   "|_\ \n")
-        elif count == 4: # Forth wrong guess, GAME OVER!!
-             print("Wrong guess! \n YOU ARE HANGED \n GAME OVER!!1")
-             print("__________\n"
-                   "|         | \n"
-                   "|         | \n"
-                   "|         O \n"
-                   "|        /|\  \n"
-                   "|         | \n"
-                   "|        / \ \n"
-                   "|\ \n"
-                   "|_\ \n"
-                   )
+        print(word_array)
 
-  # If all guesses were correct the player wins the game.
-    if word == '*' * Length:
-        print("Congrats! You have guessed it successfully...")
-    elif count != limit:
-        hangman(count, display, word)
-
-hangman(count, display, word)
-
-
+    #Checking to see if all the blanks have been filled or the player is still alive
+    if "_" not in word_array:
+        game_over = True
+        print("You win!!")
+    elif lives < 0:
+        game_over = True
+        print("Game Over! you lose!")
